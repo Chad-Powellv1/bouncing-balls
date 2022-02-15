@@ -9,3 +9,7 @@
 <br>
 
 [Check out my project...](https://chad-powellv1.github.io/bouncing-balls/)
+
+<br>
+
+<div align= 'center'><img src = './img/project_4' alt = 'Project screen shot' width = '450px'></div>
