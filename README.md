@@ -8,4 +8,4 @@
 
 <br>
 
-[Check out my project...](#)
+[Check out my project...](https://chad-powellv1.github.io/bouncing-balls/)
