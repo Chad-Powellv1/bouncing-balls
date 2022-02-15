@@ -12,4 +12,5 @@
 
 <br>
 
-<div align= 'center'><img src = './img/project_4' alt = 'Project screen shot' width = '450px'></div>
+<p align= 'center'><img src = './img/project_4.png' alt = 'Project screen shot' width = '450px' /></p>
+.
