@@ -15,17 +15,15 @@ const width = (canvas.width = window.innerWidth);
 const height = (canvas.height = window.innerHeight);
 
 // CREATE A FUNCTION TO RETURN A RANDOM NUMBER BETWEEN A MIN AND MAX RANGE
-function randomNumber(min, max) {
-	return Math.floor(Math.random() * (max = min + 1)) + min;
-}
+const randomNumber = (min, max) =>
+	Math.floor(Math.random() * (max - min + 1)) + min;
 
 // CREATE A FUNCTION TO GENERATE A RANDOM COLOR
-function randomRGB() {
-	return `rgb(${randomNumber(0, 255)},${randomNumber(0, 255)}, ${randomNumber(
+const randomRGB = () =>
+	`rgb(${randomNumber(0, 255)},${randomNumber(0, 255)},${randomNumber(
 		0,
 		255
 	)})`;
-}
 
 // CREATE BALL CLASS WITH ITS PROPERTIES, FUNCTIONS WILL BE CREATED AS METHODS OF THE CLASS
 class Ball {
@@ -42,7 +40,7 @@ class Ball {
 		ctx.beginPath(); // CREATES A NEW PATH / DRAWING
 		ctx.fillStyle = this.color; // FILL COLOR
 		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI); // DETERMINES SHAPE, THIS CASE ROUND
-		ctx.fill; // FILLS THE SHAPE IN COMPLETELY
+		ctx.fill(); // FILLS THE SHAPE IN COMPLETELY
 	}
 
 	update() {
@@ -57,18 +55,33 @@ class Ball {
 		}
 
 		// IF THE BALL HITS THE TOP SIDE IT WILL GO BACK DOWN
-		if (this.velY + this.size >= width) {
+		if (this.y + this.size >= height) {
 			this.velY = -this.velY;
 		}
 
 		// IF THE BALL HITS THE BOTTOM SIDE IT WILL GO BACK UP
-		if (this.velY - this.size <= 0) {
+		if (this.y - this.size <= 0) {
 			this.velY = -this.velY;
 		}
 
 		// THE LAST TWO LINES CAUSE THE BALL TO MOVE WHEN THE METHOD IS CALLED
 		this.x += this.velX;
 		this.y += this.velY;
+	}
+
+	collisionDetect() {
+		// FOR LOOP, TO LOOP THROUGH THE ballsArray
+		for (const ball of ballsArray)
+			if (!(this === ball)) {
+				const dx = this.x - ball.x;
+				const dy = this.y - ball.y;
+				const distance = Math.sqrt(dx * dx + dy * dy);
+
+				// CONDITION IF COLLISION IS DETECTED RANDOMLY CHANGE BALL COLOR
+				if (distance < this.size + ball.size) {
+					ball.color = this.color = randomRGB();
+				}
+			}
 	}
 }
 
@@ -98,6 +111,7 @@ const loop = function () {
 	for (const ball of ballsArray) {
 		ball.draw();
 		ball.update();
+		ball.collisionDetect();
 	}
 
 	requestAnimationFrame(loop);
