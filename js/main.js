@@ -23,3 +23,26 @@ const randomNumber = function (min, max) {
 const randomRGB = function () {
 	return `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`;
 };
+
+// CREATE BALL CLASS WITH ITS PROPERTIES, FUNCTIONS WILL BE CREATED AS METHODS OF THE CLASS
+class Ball {
+
+    constructor(x, y, velX, velY, color, size) {
+        this.x = x;
+        this.y = y;
+        this.velX = velX;
+        this.velY = velY;
+        this.color = color;
+        this.size = size;
+    }
+
+    draw() {
+        ctx.beginPath();  // CREATES A NEW PATH / DRAWING
+        ctx.fillStyle = this.color;  // FILL COLOR
+        ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI) // DETERMINES SHAPE, THIS CASE ROUND
+        ctx.fill;  // FILLS THE SHAPE IN COMPLETELY
+    }
+
+    
+}
+
