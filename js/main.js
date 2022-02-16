@@ -11,14 +11,10 @@ document.body.appendChild(canvasElement);
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
-// CREATE DOM PARAGRAPH ELEMENTS
-const pRed = document.createElement('p');
-pRed.id = 'p-red';
-document.body.appendChild(pRed);
-
-const pGreen = document.createElement('p');
-pGreen.id = 'p-green';
-document.body.appendChild(pGreen);
+// CREATE DOM PARAGRAPH ELEMENT
+const pTag = document.createElement('p');
+pTag.id = 'score';
+document.body.appendChild(pTag);
 
 // CREATE A COUNT VARIABLE TO KEEP TRACK OF SCORE
 let count = 0;
@@ -92,7 +88,7 @@ class Ball extends Shape {
 
 	collisionDetect() {
 		// FOR LOOP, TO LOOP THROUGH THE ballsArray
-		for (const ball of ballsArray && ball.exists)
+		for (const ball of ballsArray)
 			if (!(this === ball)) {
 				const dx = this.x - ball.x;
 				const dy = this.y - ball.y;
@@ -106,9 +102,8 @@ class Ball extends Shape {
 	}
 }
 
-/* --- CREATE EVIL RED CIRCLE --- */
-
-class EvilRedCircle extends Shape {
+// CREATE EVIL CIRCLE CLASS
+class EvilCircle extends Ball {
 	constructor(x, y) {
 		super(x, y, 20, 20);
 
@@ -136,7 +131,7 @@ class EvilRedCircle extends Shape {
 	draw() {
 		ctx.beginPath();
 		ctx.lineWidth = 3;
-		ctx.strokeRect = this.color;
+		ctx.strokeStyle = this.color;
 		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
 		ctx.stroke();
 	}
@@ -146,7 +141,7 @@ class EvilRedCircle extends Shape {
 			this.velX -= this.velX;
 		}
 
-		if (this.x - this.size >= 0) {
+		if (this.x - this.size <= 0) {
 			this.velX += this.velX;
 		}
 
@@ -167,9 +162,9 @@ class EvilRedCircle extends Shape {
 				const distance = Math.sqrt(dx * dx + dy * dy);
 
 				if (distance < this.size + ball.size) {
-					ball.exist = false;
+					ball.exists = false;
 					count--;
-					pRed.textContent = `Red Ball Count: ${count}`;
+					pTag.textContent = `Ball Count = ${count}`;
 				}
 			}
 		}
@@ -192,11 +187,10 @@ while (ballsArray.length < 25) {
 	);
 	ballsArray.push(ball);
 	count++;
-	pRed.textContent = `Ball Count: ${count}`;
-	pGreen.textContent = `Ball Count: ${count}`;
+	pTag.textContent = `Ball Count: ${count}`;
 }
 
-const evilCircleRed = new EvilRedCircle(
+const evilRedCircle = new EvilCircle(
 	randomNumber(0, width),
 	randomNumber(0, height)
 );
@@ -208,16 +202,16 @@ const loop = function () {
 
 	// FOR LOOP, LOOPS THROUGH THE ballsArray FOR SMOOTH ANIMATION
 	for (const ball of ballsArray) {
-		if (ball.exist) {
+		if (ball.exists) {
 			ball.draw();
 			ball.update();
 			ball.collisionDetect();
 		}
 	}
 
-	evilCircleRed.draw();
-	evilCircleRed.checkBounds();
-	evilCircleRed.collisionDetect();
+	evilRedCircle.draw();
+	evilRedCircle.checkBounds();
+	evilRedCircle.collisionDetect();
 
 	requestAnimationFrame(loop);
 };
