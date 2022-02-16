@@ -1,15 +1,27 @@
-// CREATE PAGE HEADING ELEMENT
+// CREATE DOM HEADING ELEMENT
 const heading = document.createElement('h1');
-heading.innerText = 'bouncing balls';
+heading.textContent = 'bouncing balls';
 document.body.appendChild(heading);
 
-// CREATE PAGE CANVAS ELEMENT
+// CREATE DOM CANVAS ELEMENT
 const canvasElement = document.createElement('canvas');
 document.body.appendChild(canvasElement);
 
 // GET THE CANVAS ELEMENT AND USE THE getContext METHOD, IN THIS CASE FOR 2D RENDERING
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+
+// CREATE DOM PARAGRAPH ELEMENTS
+const pRed = document.createElement('p');
+pRed.id = 'p-red';
+document.body.appendChild(pRed);
+
+const pGreen = document.createElement('p');
+pGreen.id = 'p-green';
+document.body.appendChild(pGreen);
+
+// CREATE A COUNT VARIABLE TO KEEP TRACK OF SCORE
+let count = 0;
 
 const width = (canvas.width = window.innerWidth);
 const height = (canvas.height = window.innerHeight);
@@ -25,19 +37,28 @@ const randomRGB = () =>
 		255
 	)})`;
 
-// CREATE BALL CLASS WITH ITS PROPERTIES, FUNCTIONS WILL BE CREATED AS METHODS OF THE CLASS
-class Ball {
-	constructor(x, y, velX, velY, color, size) {
+// CREATE A SHAPE CLASS
+class Shape {
+	constructor(x, y, velX, velY) {
 		this.x = x;
 		this.y = y;
 		this.velX = velX;
 		this.velY = velY;
+	}
+}
+
+// CREATE BALL CLASS WITH ITS PROPERTIES, FUNCTIONS WILL BE CREATED AS METHODS OF THE CLASS
+class Ball extends Shape {
+	constructor(x, y, velX, velY, color, size) {
+		super(x, y, velX, velY);
+
 		this.color = color;
 		this.size = size;
+		this.exists = true;
 	}
 
 	draw() {
-		ctx.beginPath(); // CREATES A NEW PATH / DRAWING
+		ctx.beginPath(); // CREATES A NEW PATH FOR DRAWING
 		ctx.fillStyle = this.color; // FILL COLOR
 		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI); // DETERMINES SHAPE, THIS CASE ROUND
 		ctx.fill(); // FILLS THE SHAPE IN COMPLETELY
@@ -71,7 +92,7 @@ class Ball {
 
 	collisionDetect() {
 		// FOR LOOP, TO LOOP THROUGH THE ballsArray
-		for (const ball of ballsArray)
+		for (const ball of ballsArray && ball.exists)
 			if (!(this === ball)) {
 				const dx = this.x - ball.x;
 				const dy = this.y - ball.y;
@@ -82,6 +103,76 @@ class Ball {
 					ball.color = this.color = randomRGB();
 				}
 			}
+	}
+}
+
+/* --- CREATE EVIL RED CIRCLE --- */
+
+class EvilRedCircle extends Shape {
+	constructor(x, y) {
+		super(x, y, 20, 20);
+
+		this.color = 'red';
+		this.size = 10;
+
+		window.addEventListener('keydown', e => {
+			switch (e.key) {
+				case 'a':
+					this.x -= this.velX;
+					break;
+				case 'd':
+					this.x += this.velX;
+					break;
+				case 'w':
+					this.y -= this.velY;
+					break;
+				case 's':
+					this.y += this.velY;
+					break;
+			}
+		});
+	}
+
+	draw() {
+		ctx.beginPath();
+		ctx.lineWidth = 3;
+		ctx.strokeRect = this.color;
+		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+		ctx.stroke();
+	}
+
+	checkBounds() {
+		if (this.x + this.size >= width) {
+			this.velX -= this.velX;
+		}
+
+		if (this.x - this.size >= 0) {
+			this.velX += this.velX;
+		}
+
+		if (this.y + this.size >= height) {
+			this.velY -= this.velY;
+		}
+
+		if (this.y - this.size <= 0) {
+			this.velY += this.velY;
+		}
+	}
+
+	collisionDetect() {
+		for (const ball of ballsArray) {
+			if (ball.exists) {
+				const dx = this.x - ball.x;
+				const dy = this.y - ball.y;
+				const distance = Math.sqrt(dx * dx + dy * dy);
+
+				if (distance < this.size + ball.size) {
+					ball.exist = false;
+					count--;
+					pRed.textContent = `Red Ball Count: ${count}`;
+				}
+			}
+		}
 	}
 }
 
@@ -100,7 +191,15 @@ while (ballsArray.length < 25) {
 		size
 	);
 	ballsArray.push(ball);
+	count++;
+	pRed.textContent = `Ball Count: ${count}`;
+	pGreen.textContent = `Ball Count: ${count}`;
 }
+
+const evilCircleRed = new EvilRedCircle(
+	randomNumber(0, width),
+	randomNumber(0, height)
+);
 
 // CREATE AN ANIMATION LOOP, TO UPDATE THE VIEW  FOR EACH ANIMATION FRAME
 const loop = function () {
@@ -109,10 +208,16 @@ const loop = function () {
 
 	// FOR LOOP, LOOPS THROUGH THE ballsArray FOR SMOOTH ANIMATION
 	for (const ball of ballsArray) {
-		ball.draw();
-		ball.update();
-		ball.collisionDetect();
+		if (ball.exist) {
+			ball.draw();
+			ball.update();
+			ball.collisionDetect();
+		}
 	}
+
+	evilCircleRed.draw();
+	evilCircleRed.checkBounds();
+	evilCircleRed.collisionDetect();
 
 	requestAnimationFrame(loop);
 };
