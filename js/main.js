@@ -46,7 +46,7 @@ class Shape {
 // CREATE BALL CLASS WITH ITS PROPERTIES, FUNCTIONS WILL BE CREATED AS METHODS OF THE CLASS
 class Ball extends Shape {
 	constructor(x, y, velX, velY, color, size) {
-		super(x, y, velX, velY);
+		super(x, y, velX, velY); // SUPER KEYWORD, ACCESSES & CALLS METHODS FROM THE PARENT OBJECT SHAPE
 
 		this.color = color;
 		this.size = size;
@@ -61,22 +61,22 @@ class Ball extends Shape {
 	}
 
 	update() {
-		// IF THE BALL HITS THE RIGHT SIDE IT WILL GO BACK LEFT
+		// KEEPS BALL FROM GOING OFF RIGHT SIDE OF SCREEN
 		if (this.x + this.size >= width) {
 			this.velX = -this.velX;
 		}
 
-		// IF THE BALL HITS THE LEFT SIDE IT WILL GO BACK RIGHT
+		// KEEPS BALL FROM GOING OFF LEFT SIDE OF SCREEN
 		if (this.x - this.size <= 0) {
 			this.velX = -this.velX;
 		}
 
-		// IF THE BALL HITS THE TOP SIDE IT WILL GO BACK DOWN
+		// KEEPS BALL FROM GOING OFF TOP OF SCREEN
 		if (this.y + this.size >= height) {
 			this.velY = -this.velY;
 		}
 
-		// IF THE BALL HITS THE BOTTOM SIDE IT WILL GO BACK UP
+		// KEEPS BALL FROM GOING OFF BOTTOM OF SCREEN
 		if (this.y - this.size <= 0) {
 			this.velY = -this.velY;
 		}
@@ -87,7 +87,7 @@ class Ball extends Shape {
 	}
 
 	collisionDetect() {
-		// FOR LOOP, TO LOOP THROUGH THE ballsArray
+		// FOR LOOP, TO LOOP THROUGH THE ballsArray AND DETECT WHEN BALL OBJECTS COLLIDE
 		for (const ball of ballsArray)
 			if (!(this === ball)) {
 				const dx = this.x - ball.x;
@@ -110,6 +110,7 @@ class EvilCircle extends Ball {
 		this.color = 'red';
 		this.size = 10;
 
+		// CREATE KEYBOARD INPUTS ALLOWING PLAYER TO CONTROL EVIL CIRCLE
 		window.addEventListener('keydown', e => {
 			switch (e.key) {
 				case 'a':
@@ -129,38 +130,24 @@ class EvilCircle extends Ball {
 	}
 
 	draw() {
-		ctx.beginPath();
-		ctx.lineWidth = 3;
-		ctx.strokeStyle = this.color;
-		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-		ctx.stroke();
+		ctx.beginPath(); // CREATES A NEW PATH FOR DRAWING
+		ctx.lineWidth = 3; // SETS THE LINE WIDTH FOR THE EVIL CIRCLE OUTLINE
+		ctx.strokeStyle = this.color; // SETS THE COLOR OF CIRCLE BASED ON OBJECT PROPERTY SET IN CLASS OBJECT
+		ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI); // DETERMINES SHAPE, THIS CASE ROUND
+		ctx.stroke(); // SETS THE COLOR ONLY TO MAKE A CIRCLE AND LEAVING THE CENTER VOID OF COLOR
 	}
 
-	checkBounds() {
-		if (this.x + this.size >= width) {
-			this.velX -= this.velX;
-		}
-
-		if (this.x - this.size <= 0) {
-			this.velX += this.velX;
-		}
-
-		if (this.y + this.size >= height) {
-			this.velY -= this.velY;
-		}
-
-		if (this.y - this.size <= 0) {
-			this.velY += this.velY;
-		}
-	}
-
+	// FOR LOOP, TO LOOP THROUGH THE ballsArray AND DETECT WHEN BALL OBJECTS COLLIDE
 	collisionDetect() {
 		for (const ball of ballsArray) {
-			if (ball.exists) {
+
+		// ADDED THE EXISTS PROPERTY TO CONDITIONAL STATEMENT
+			if (!(this === ball) && ball.exists) {
 				const dx = this.x - ball.x;
 				const dy = this.y - ball.y;
 				const distance = Math.sqrt(dx * dx + dy * dy);
-
+			
+			// CONDITIONAL STATEMENT REMOVES BALL AFTER COLLISION AND ADDS COUNT TO pTag ELEMENT IN DOM
 				if (distance < this.size + ball.size) {
 					ball.exists = false;
 					count--;
@@ -169,27 +156,53 @@ class EvilCircle extends Ball {
 			}
 		}
 	}
+
+
+	checkBounds() {
+		// KEEPS BALL FROM GOING OFF RIGHT SIDE OF SCREEN
+		if (this.x + this.size >= width) {
+			this.velX -= this.velX;
+		}
+
+		// KEEPS BALL FROM GOING OFF LEFT SIDE OF SCREEN
+		if (this.x - this.size <= 0) {
+			this.velX += this.velX;
+		}
+
+		// KEEPS BALL FROM GOING OFF TOP SIDE OF SCREEN
+		if (this.y + this.size >= height) {
+			this.velY -= this.velY;
+		}
+
+		// KEEPS BALL FROM GOING OFF BOTTOM SIDE OF SCREEN
+		if (this.y - this.size <= 0) {
+			this.velY += this.velY;
+		}
+	}
 }
 
 // CREATE AN ARRAY TO STORE THE BALLS ONCE THEY ARE ADDED TO THE CANVAS
 const ballsArray = [];
 
-// CREATE A WHILE LOOP TO CREATE RANDOM BALL SIZES AND COLORS
+/* CREATE A WHILE LOOP TO CREATE RANDOM BALL SIZES, COLORS, AND ENSURE THEY ARE DRAWN ONE BALL
+WIDTH AWAY FROM THE EDGE AND ANOTHER BALL */
 while (ballsArray.length < 25) {
 	const size = randomNumber(10, 20);
 	const ball = new Ball(
-		randomNumber(0 + size, width - size), // BALL POSITION DRAWN ONE BALL WIDTH AWAY FROM EDGE AND OTHER BALL
+		randomNumber(0 + size, width - size),
 		randomNumber(0 + size, height - size),
 		randomNumber(-7, 7),
 		randomNumber(-7, 7),
 		randomRGB(),
 		size
 	);
+	// PUSH CREATED BALLS TO THE ballsArray, UPDATE TOTAL BALL COUNT AND ADD TO pTAG in DOM
 	ballsArray.push(ball);
 	count++;
 	pTag.textContent = `Ball Count: ${count}`;
 }
 
+// CREATE THE EVIL CIRCLE AT THE SPECIFIED DIMENSIONS, BUT RANDOM LOCATION ACCORDING TO CLASS PROPERTIES
 const evilRedCircle = new EvilCircle(
 	randomNumber(0, width),
 	randomNumber(0, height)
@@ -209,6 +222,7 @@ const loop = function () {
 		}
 	}
 
+	// EVIL CIRCLE CLASS METHODS ADDED TO LOOP FOR SMOOTH ANIMATION
 	evilRedCircle.draw();
 	evilRedCircle.checkBounds();
 	evilRedCircle.collisionDetect();
@@ -216,4 +230,5 @@ const loop = function () {
 	requestAnimationFrame(loop);
 };
 
+// CALL THE LOOP FUNCTION TO START THE APP
 loop();
