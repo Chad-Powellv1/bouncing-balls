@@ -19,6 +19,7 @@ document.body.appendChild(pTag);
 // CREATE A COUNT VARIABLE TO KEEP TRACK OF SCORE
 let count = 0;
 
+// CREATE VARIABLES FOR THE CANVAS ELEMENT
 const width = (canvas.width = window.innerWidth);
 const height = (canvas.height = window.innerHeight);
 
@@ -140,14 +141,13 @@ class EvilCircle extends Ball {
 	// FOR LOOP, TO LOOP THROUGH THE ballsArray AND DETECT WHEN BALL OBJECTS COLLIDE
 	collisionDetect() {
 		for (const ball of ballsArray) {
-
-		// ADDED THE EXISTS PROPERTY TO CONDITIONAL STATEMENT
+			// ADDED THE EXISTS PROPERTY TO CONDITIONAL STATEMENT
 			if (!(this === ball) && ball.exists) {
 				const dx = this.x - ball.x;
 				const dy = this.y - ball.y;
 				const distance = Math.sqrt(dx * dx + dy * dy);
-			
-			// CONDITIONAL STATEMENT REMOVES BALL AFTER COLLISION AND ADDS COUNT TO pTag ELEMENT IN DOM
+
+				// CONDITIONAL STATEMENT REMOVES BALL AFTER COLLISION AND ADDS COUNT TO pTag ELEMENT IN DOM
 				if (distance < this.size + ball.size) {
 					ball.exists = false;
 					count--;
@@ -156,7 +156,6 @@ class EvilCircle extends Ball {
 			}
 		}
 	}
-
 
 	checkBounds() {
 		// KEEPS BALL FROM GOING OFF RIGHT SIDE OF SCREEN
